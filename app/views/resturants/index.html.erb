@@ -1,0 +1,41 @@
+<p id="notice"><%= notice %></p>
+
+<div class="jumbotron">
+<h2>Header for Yelpdemo!!!</h2>
+<h3>Smaller text ander the header.<br>
+    Some very important text.</h3>
+</div>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Phone</th>
+      <th>Website</th>
+      <% if user_signed_in? && current_user.admin? %>
+        <th colspan="2"></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @resturants.each do |resturant| %>
+      <tr>
+        <td><%= link_to resturant.name, resturant %></td>
+        <td><%= resturant.address %></td>
+        <td><%= resturant.phone %></td>
+        <td><%= link_to resturant.website, resturant.website %></td>
+        <% if user_signed_in? && current_user.admin? %>
+          <td><%= link_to 'Edit', edit_resturant_path(resturant), class: "btn btn-link" %></td>
+          <td><%= link_to 'Destroy', resturant, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-link" %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+<% if user_signed_in? && current_user.admin? %>
+  <%= link_to 'New Resturant', new_resturant_path, class: "btn btn-link" %>
+<% end %>

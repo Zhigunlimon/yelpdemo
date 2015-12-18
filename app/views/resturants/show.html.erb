@@ -1,0 +1,93 @@
+<div class="row">
+  <div class="col-md-3">
+    <%= image_tag @resturant.image_url %>
+
+    <h2>
+      <%= @resturant.name %>
+    </h2>
+
+    <div class="star-rating" data-score= <%= @avg_rating %> ></div>
+    <p><%= "#{@reviews.length} reviews" %></p>
+
+    <p>
+      <strong>Address:</strong>
+      <%= @resturant.address %>
+    </p>
+    <p>
+      <strong>Phone:</strong>
+      <%= @resturant.phone %>
+    </p>
+    <p>
+      <strong>Website:</strong>
+      <%= link_to  @resturant.website, @resturant.website %>
+    </p>
+
+    <% if user_signed_in? %>
+      <%= link_to "Write Review", new_resturant_review_path(@resturant), class: "btn btn-primary" %>
+    <% end %>
+
+    <br>
+    <br>
+
+    <iframe
+        width="230"
+        height="230"
+        frameborder="0" style="border:0"
+        src="https://www.google.com/maps/embed/v1/search?key=AIzaSyB8guSI_ipDB3-f62qrGsgy6u_DoFpbW4E&q=<%= @resturant.address.gsub(/[, ]/,'+') %>&language=ru">
+     </iframe>
+  </div>
+
+  <div class="col-md-9">
+    <% if @reviews.blank? %>
+      <h3>No reviews yet. Be the first to write one!</h3>
+    <% else %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-md-3"></th>
+            <th class="col-md-9"></th>
+          </tr>
+      </thead>
+
+        <tbody>
+          <% @reviews.each do |review| %>
+            <tr>
+              <td>
+                <h4>
+                  <%= image_tag review.user.image_url %>
+                  <%= "#{review.user.first_name.capitalize} #{review.user.last_name.capitalize.first}." %>
+                </h4>
+                <p><%= review.created_at.strftime("%-m/%-d/%-y") %></p>
+              </td>
+
+             <td>
+                <div class="star-rating" data-score= <%= review.rating %> ></div>
+                <p><%= h(review.comment).gsub(/\n/, '<br/>').html_safe %></p>
+
+                <% if user_signed_in? %>
+                  <% if (review.user == current_user) || (current_user.admin?) %>
+                    <%= link_to "Edit", edit_resturant_review_path(@resturant, review) %>
+                    <%= link_to "Delete", resturant_review_path(@resturant, review), method: :delete %>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>
+
+<%= link_to 'Edit', edit_resturant_path(@resturant), class: "btn btn-link" %> |
+<%= link_to 'Back', resturants_path, class: "btn btn-link" %>
+
+<script>
+  $('.star-rating').raty({
+    path: '/stars',
+    readOnly: true,
+    score: function() {
+      return $(this).attr('data-score');
+    }
+  });
+</script>
